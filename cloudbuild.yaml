@@ -15,3 +15,5 @@ steps:
     args: ['cp', 'basic_pipeline.json', 'gs://demo-account']
     id:  'upload'
     waitFor: ['compile']
+options:
+  logging: CLOUD_LOGGING_ONLY
