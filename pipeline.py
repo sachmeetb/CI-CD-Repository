@@ -17,8 +17,6 @@ from kfp.v2.dsl import (Artifact,
                         Model,
                         Output
                        )
-from google_cloud_pipeline_components.v1.model import ModelUploadOp
-from google.cloud.aiplatform_v1.types import UnmanagedContainerModel
 from typing import NamedTuple
 
 
