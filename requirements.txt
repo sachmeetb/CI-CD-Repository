@@ -1,0 +1,6 @@
+google_cloud_pipeline_components==1.0.7
+kfp==1.8.12
+numpy==1.22.4
+pandas==1.4.2
+protobuf==3.20.1
+scikit_learn==1.1.1

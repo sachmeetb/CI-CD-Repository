@@ -23,9 +23,9 @@ from typing import NamedTuple
 
 
 # Project ID 
-Val = !gcloud config list --format 'value(core.project)'
-print(Val)
-PROJECT_ID = Val[0]
+# Val = !gcloud config list --format 'value(core.project)'
+# print(Val)
+PROJECT_ID = "optical-hexagon-350508"
 REGION = "us-west1"
 TIMESTAMP = datetime.now().strftime("%Y%m%d%H%M%S")
 SERVICE_ACCOUNT = "559647087083-compute@developer.gserviceaccount.com"
