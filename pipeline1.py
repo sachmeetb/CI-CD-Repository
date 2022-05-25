@@ -1,26 +1,15 @@
+import json
 from datetime import datetime
-import google.cloud.aiplatform as aip
+from typing import Dict, NamedTuple, Optional, Sequence, Tuple
 
+import google.cloud.aiplatform as aip
 # from google_cloud_pipeline_components import aiplatform as gcc_aip
 import kfp
 from kfp import dsl
 from kfp.v2 import compiler
-from kfp.v2.dsl import component
-import json
+from kfp.v2.dsl import (Artifact, ClassificationMetrics, Dataset, Input,
+                        Metrics, Model, Output, component)
 from kfp.v2.google.client import AIPlatformClient
-from typing import Optional, Dict, Sequence, Tuple
-from kfp.v2.dsl import (
-    Artifact,
-    ClassificationMetrics,
-    component,
-    Dataset,
-    Input,
-    Metrics,
-    Model,
-    Output,
-)
-from typing import NamedTuple
-
 
 # Project ID
 # Val = !gcloud config list --format 'value(core.project)'
@@ -43,9 +32,9 @@ aip.init(project=PROJECT_ID, location=REGION, staging_bucket=BUCKET_NAME)
     packages_to_install=["scikit-learn", "pandas", "numpy"],
 )
 def df_load(output: Output[Dataset]):
-    from sklearn.datasets import load_breast_cancer
-    import pandas as pd
     import numpy as np
+    import pandas as pd
+    from sklearn.datasets import load_breast_cancer
 
     dataframe = load_breast_cancer()
     df = pd.DataFrame(
@@ -64,8 +53,8 @@ def df_load(output: Output[Dataset]):
 )
 def transform_df(dataset: Input[Dataset], output_scaled: Output[Dataset]):
 
-    from sklearn.preprocessing import StandardScaler
     import pandas as pd
+    from sklearn.preprocessing import StandardScaler
 
     df = pd.read_csv(dataset.path)
     X = df.loc[:, df.columns != "target"]
@@ -91,8 +80,8 @@ def train_test_split(
     output_y_train: Output[Dataset],
     output_y_test: Output[Dataset],
 ):
-    from sklearn.model_selection import train_test_split
     import pandas as pd
+    from sklearn.model_selection import train_test_split
 
     df_scaled = pd.read_csv(dataset.path)
     X_train, X_test, y_train, y_test = train_test_split(
@@ -120,15 +109,15 @@ def log_reg(
     output: Output[Model],
     output_metrics: Output[ClassificationMetrics],
 ) -> str:
-    from sklearn.linear_model import LogisticRegression
-    from google.cloud import aiplatform, storage
-    import pandas as pd
-    from sklearn.metrics import confusion_matrix
-    from sklearn import model_selection
-    import pickle
-    from sklearn.metrics import roc_curve
-    from sklearn.model_selection import cross_val_predict
     import os
+    import pickle
+
+    import pandas as pd
+    from google.cloud import aiplatform, storage
+    from sklearn import model_selection
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import confusion_matrix, roc_curve
+    from sklearn.model_selection import cross_val_predict
 
     X_train = pd.read_csv(input_X.path)
     y_train = pd.read_csv(input_y.path)
