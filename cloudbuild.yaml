@@ -15,5 +15,6 @@ steps:
     args: ['cp', 'basic_pipeline.json', 'gs://demo-account']
     id:  'upload'
     waitFor: ['compile']
+timeout: 8000s
 options:
   logging: CLOUD_LOGGING_ONLY
