@@ -1,23 +1,12 @@
 from datetime import datetime
+from typing import NamedTuple
+
 import google.cloud.aiplatform as aip
-# from google_cloud_pipeline_components import aiplatform as gcc_aip
-import kfp
+
 from kfp import dsl
 from kfp.v2 import compiler
-from kfp.v2.dsl import component
-import json
-from kfp.v2.google.client import AIPlatformClient
-from typing import Optional, Dict, Sequence, Tuple
-from kfp.v2.dsl import (Artifact,
-                        ClassificationMetrics, 
-                        component,
-                        Dataset,
-                        Input,
-                        Metrics,
-                        Model,
-                        Output
-                       )
-from typing import NamedTuple
+from kfp.v2.dsl import (ClassificationMetrics, Dataset, Input,
+                        Model, Output, component)
 
 
 # Project ID 
@@ -41,9 +30,9 @@ aip.init(project=PROJECT_ID, location=REGION,staging_bucket=BUCKET_NAME)
 def df_load(
     output: Output[Dataset]
 ):
-    from sklearn.datasets import load_breast_cancer
-    import pandas as pd
     import numpy as np
+    import pandas as pd
+    from sklearn.datasets import load_breast_cancer
     dataframe = load_breast_cancer()
     df = pd.DataFrame(data= np.c_[dataframe['data'], dataframe['target']],
                      columns= np.append(dataframe['feature_names'], 'target'))
@@ -58,8 +47,8 @@ def transform_df(
 dataset: Input[Dataset],
 output_scaled: Output[Dataset]):
     
-    from sklearn.preprocessing import StandardScaler
     import pandas as pd
+    from sklearn.preprocessing import StandardScaler
     df = pd.read_csv(dataset.path)
     X = df.loc[: , df.columns != 'target']
     scaler = StandardScaler().fit(X)
@@ -81,8 +70,8 @@ output_X_test: Output[Dataset],
 output_y_train: Output[Dataset],
 output_y_test: Output[Dataset]
 ): 
-    from sklearn.model_selection import train_test_split
     import pandas as pd
+    from sklearn.model_selection import train_test_split
     df_scaled = pd.read_csv(dataset.path)
     X_train, X_test, y_train, y_test = train_test_split(df_scaled.loc[: , df_scaled.columns != 'target'], df_scaled['target'], test_size = 0.2, random_state=1)
     X_train.to_csv(output_X_train.path, index=False)
@@ -100,13 +89,14 @@ def KNN(
     input_y: Input[Dataset],
     output: Output[Model],
     output_metrics: Output[ClassificationMetrics]):
-    from sklearn.neighbors import KNeighborsClassifier
+    import os
+    import pickle
+
+    import pandas as pd
+    from sklearn import model_selection
     from sklearn.metrics import confusion_matrix
     from sklearn.model_selection import cross_val_predict
-    from sklearn import model_selection
-    import pandas as pd
-    import pickle
-    import os
+    from sklearn.neighbors import KNeighborsClassifier
     X_train = pd.read_csv(input_X.path)
     y_train = pd.read_csv(input_y.path)
     model_1 = KNeighborsClassifier(n_neighbors=35)
@@ -133,14 +123,14 @@ def log_reg(input_X: Input[Dataset],
     input_y: Input[Dataset],
     output: Output[Model],
     output_metrics: Output[ClassificationMetrics]):
-    from sklearn.linear_model import LogisticRegression
-    import pandas as pd
-    from sklearn.metrics import confusion_matrix
-    from sklearn import model_selection
-    import pickle
-    from sklearn.metrics import roc_curve
-    from sklearn.model_selection import cross_val_predict
     import os
+    import pickle
+
+    import pandas as pd
+    from sklearn import model_selection
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import confusion_matrix, roc_curve
+    from sklearn.model_selection import cross_val_predict
     X_train = pd.read_csv(input_X.path)
     y_train = pd.read_csv(input_y.path)
     log_reg = LogisticRegression()
@@ -169,14 +159,14 @@ def forest(input_X: Input[Dataset],
     output: Output[Model],
     output_metrics1: Output[ClassificationMetrics],
     output_metrics2: Output[ClassificationMetrics]):
-    from sklearn.ensemble import RandomForestClassifier
+    import os
+    import pickle
+
     import pandas as pd
     from sklearn import model_selection
-    from sklearn.metrics import roc_curve
-    from sklearn.metrics import confusion_matrix
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.metrics import confusion_matrix, roc_curve
     from sklearn.model_selection import cross_val_predict
-    import pickle
-    import os
     X_train = pd.read_csv(input_X.path)
     y_train = pd.read_csv(input_y.path)
     forest = RandomForestClassifier(n_estimators=50, random_state=0)
@@ -209,13 +199,14 @@ def svm(input_X: Input[Dataset],
     input_y: Input[Dataset],
     output: Output[Model],
     output_metrics: Output[ClassificationMetrics]):
-    from sklearn.svm import SVC
-    import pandas as pd
-    import pickle
     import os
+    import pickle
+
+    import pandas as pd
+    from sklearn import model_selection
     from sklearn.metrics import confusion_matrix
     from sklearn.model_selection import cross_val_predict
-    from sklearn import model_selection
+    from sklearn.svm import SVC
     X_train = pd.read_csv(input_X.path)
     y_train = pd.read_csv(input_y.path)
     svm = SVC()
@@ -253,10 +244,11 @@ def crowning(
         ("output_challenger_location", str),
     ],
 ):
-    import pickle
-    from google.cloud import storage
-    import pandas as pd
     import os
+    import pickle
+
+    import pandas as pd
+    from google.cloud import storage
     model_1 = pickle.load(open(input_model_1.path, 'rb'))
     model_2 = pickle.load(open(input_model_2.path, 'rb'))
     model_3 = pickle.load(open(input_model_3.path, 'rb'))
@@ -303,9 +295,10 @@ def absolute_testing(
     input_challenger: Input[Model],
     scaled_data: Input[Dataset],
     ) -> str:
-    import pickle
-    import pandas as pd
     import os
+    import pickle
+
+    import pandas as pd
     champion_path = os.path.join(input_champion.path, 'model.pkl')
     challenger_path = os.path.join(input_challenger.path, 'model.pkl')
     champion_model = pickle.load(open(champion_path, 'rb'))
