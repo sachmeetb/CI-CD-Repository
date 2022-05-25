@@ -1,5 +1,6 @@
 name: python-isort
-author: jamescurtin
+on: [push, pull_request]
+
 description: Run isort on a Python project
 branding:
   icon: check
