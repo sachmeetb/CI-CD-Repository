@@ -12,7 +12,7 @@ steps:
 
   # Upload compiled pipeline to GCS.
   - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['cp', 'basic_pipeline.json', 'gs://demo-account']
+    args: ['cp', 'final.json', 'gs://demo-account']
     id:  'upload'
     waitFor: ['compile']
 timeout: 8000s
