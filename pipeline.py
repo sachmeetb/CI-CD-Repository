@@ -46,7 +46,8 @@ def df_load(output: Output[Dataset]):
 
 @component(
     base_image="gcr.io/ml-pipeline/google-cloud-pipeline-components:latest",
-    packages_to_install=["scikit-learn", "pandas", "numpy"],)
+    packages_to_install=["scikit-learn", "pandas", "numpy"],
+)
 def transform_df(dataset: Input[Dataset], output_scaled: Output[Dataset]):
 
     import pandas as pd
