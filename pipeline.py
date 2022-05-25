@@ -4,8 +4,7 @@ from typing import NamedTuple
 import google.cloud.aiplatform as aip
 from kfp import dsl
 from kfp.v2 import compiler
-from kfp.v2.dsl import (ClassificationMetrics, Dataset, Input, Model, Output,
-                        component)
+from kfp.v2.dsl import ClassificationMetrics, Dataset, Input, Model, Output, component
 
 # Project ID
 # Val = !gcloud config list --format 'value(core.project)'

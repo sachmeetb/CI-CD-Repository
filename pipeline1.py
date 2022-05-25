@@ -3,12 +3,21 @@ from datetime import datetime
 from typing import Dict, NamedTuple, Optional, Sequence, Tuple
 
 import google.cloud.aiplatform as aip
+
 # from google_cloud_pipeline_components import aiplatform as gcc_aip
 import kfp
 from kfp import dsl
 from kfp.v2 import compiler
-from kfp.v2.dsl import (Artifact, ClassificationMetrics, Dataset, Input,
-                        Metrics, Model, Output, component)
+from kfp.v2.dsl import (
+    Artifact,
+    ClassificationMetrics,
+    Dataset,
+    Input,
+    Metrics,
+    Model,
+    Output,
+    component,
+)
 from kfp.v2.google.client import AIPlatformClient
 
 # Project ID
