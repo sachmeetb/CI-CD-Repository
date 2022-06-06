@@ -24,7 +24,8 @@ aip.init(project=PROJECT_ID, location=REGION, staging_bucket=BUCKET_NAME)
 
 @component(
     base_image="gcr.io/ml-pipeline/google-cloud-pipeline-components:latest",
-    packages_to_install=["scikit-learn", "pandas", "numpy"],)
+    packages_to_install=["scikit-learn", "pandas", "numpy"],
+)
 def df_load(output: Output[Dataset]):
     import numpy as np
     import pandas as pd
